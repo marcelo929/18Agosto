@@ -1,3 +1,5 @@
+/* ... (todo o seu CSS existente vai aqui em cima) ... */
+
 :root {
     --text-color-green: #39FF14;
     --text-color-pink: #F2A2E8;
@@ -20,7 +22,6 @@ body {
     cursor: default;
 }
 
-/* Classe para a mudança de cor */
 body.pink-mode {
     color: var(--text-color-pink);
 }
@@ -62,9 +63,29 @@ body.pink-mode {
     outline: none;
 }
 
-/* Responsividade para telas menores */
+/* --- NOVOS ESTILOS PARA A CENA FINAL --- */
+
+.hidden {
+    display: none !important;
+}
+
+#finalScene {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    padding: 2rem;
+    box-sizing: border-box;
+    text-align: center;
+    font-size: 2rem;
+    color: var(--text-color-pink);
+}
+
 @media (max-width: 600px) {
     body {
         font-size: 1.2rem;
+    }
+    #finalScene {
+        font-size: 1.5rem;
     }
 }
