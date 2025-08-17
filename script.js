@@ -133,6 +133,11 @@ class Dialogue {
         const lines = this.get(key);
         return lines[Math.floor(Math.random() * lines.length)];
     }
+    // Novo método para arrays de arrays (erros, falas alternativas etc.)
+    getRandomDialogue(key) {
+        const options = this.get(key);
+        return options[Math.floor(Math.random() * options.length)];
+    }
     getHangmanWords() { return this.hangmanWords; }
     getHangmanWord(index) { return this.hangmanWords[index]; }
     getHangmanArt(index) { return this.hangmanArt[index]; }
@@ -198,7 +203,6 @@ class Game {
         }
     }
 
-    // **** INÍCIO DA CORREÇÃO ****
     async handleNameStage(value) {
         this.state.isTyping = true;
         const normalizedName = value.toLowerCase();
@@ -206,142 +210,4 @@ class Game {
         if (['nádia', 'nadia', 'nadinha'].includes(normalizedName)) {
             this.state.stage = 'getDifficulty';
             this.ui.setTheme('pink-mode');
-            await new Promise(resolve => setTimeout(resolve, 200));
-            await this.ui.type(this.dialogue.get('difficultyPrompt'));
-        } else {
-            this.state.errorCount++;
-            await this.ui.type(this.dialogue.getRandomLine('nameError'));
-        }
-        this.state.isTyping = false;
-    }
-
-    async handleDifficultyStage(value) {
-        this.state.isTyping = true;
-        const choice = value.toLowerCase();
-        let linesToType;
-
-        if (['fácil', 'facil', 'medio', 'médio'].includes(choice)) {
-            linesToType = this.dialogue.get('easyMediumChoice');
-        } else if (['difícil', 'dificil'].includes(choice)) {
-            linesToType = this.state.errorCount > 0 
-                ? this.dialogue.get('hardChoiceWithError') 
-                : this.dialogue.get('hardChoiceNoError');
-        } else {
-            this.state.errorCount++;
-            const newPrompt = [...this.dialogue.getRandomError('difficultyError')];
-            newPrompt.unshift(`"${value}"?`);
-            linesToType = newPrompt;
-            await this.ui.type(linesToType);
-            this.state.isTyping = false;
-            return; 
-        }
-        
-        await this.ui.type(linesToType);
-        await this.startHangmanChallenge();
-        this.state.isTyping = false;
-    }
-    // **** FIM DA CORREÇÃO ****
-
-    async startHangmanChallenge() {
-        this.state.stage = 'hangman';
-        this.state.isTyping = true;
-        await this.ui.type(this.dialogue.get('challengeIntro'));
-        this.ui.renderHangman(this.state, this.dialogue);
-        this.state.isTyping = false;
-    }
-
-    async handleHangmanInput(value) {
-        const guess = value.toUpperCase();
-        const normalizedGuess = this.ui.normalizeString(guess);
-
-        if (guess.length !== 1 || !/^[A-Z]$/.test(normalizedGuess)) return;
-
-        if (this.state.guessedLetters.includes(guess) || this.state.normalizedGuessedLetters.includes(normalizedGuess)) {
-            this.state.isTyping = true;
-            await this.ui.type([this.dialogue.getRandomLine('guessRepeated')], false);
-            this.ui.renderHangman(this.state, this.dialogue);
-            this.state.isTyping = false;
-            return;
-        }
-
-        this.state.guessedLetters.push(guess);
-        if (!this.state.normalizedGuessedLetters.includes(normalizedGuess)) {
-            this.state.normalizedGuessedLetters.push(normalizedGuess);
-        }
-
-        const currentWord = this.dialogue.getHangmanWord(this.state.currentWordIndex).word;
-        const normalizedWord = this.ui.normalizeString(currentWord);
-
-        if (normalizedWord.includes(normalizedGuess)) {
-            const wordComplete = currentWord.split('').every(letter => this.state.normalizedGuessedLetters.includes(this.ui.normalizeString(letter)));
-            if (wordComplete) {
-                this.state.isTyping = true;
-                await this.ui.type([this.dialogue.getRandomLine('guessCorrect')], false);
-                await this.nextWord(true);
-                this.state.isTyping = false;
-            } else {
-                this.ui.renderHangman(this.state, this.dialogue);
-            }
-        } else {
-            this.state.wordErrors++;
-            this.state.isTyping = true;
-            await this.ui.type([this.dialogue.getRandomLine('guessWrong')], false);
-            if (this.state.wordErrors >= this.state.maxErrors) {
-                await this.nextWord(false);
-            } else {
-                this.ui.renderHangman(this.state, this.dialogue);
-            }
-            this.state.isTyping = false;
-        }
-    }
-
-    async nextWord(success) {
-        const wordData = this.dialogue.getHangmanWord(this.state.currentWordIndex);
-        this.state.solvedWords[this.state.currentWordIndex] = success ? wordData.word : `(${wordData.word})`;
-
-        this.state.currentWordIndex++;
-        this.state.guessedLetters = [];
-        this.state.normalizedGuessedLetters = [];
-        this.state.wordErrors = 0;
-
-        if (this.state.currentWordIndex >= this.dialogue.getHangmanWords().length) {
-            this.state.stage = 'finalEnigma';
-            await this.ui.type(this.dialogue.get('finalReveal'));
-        } else {
-            const messageKey = success ? 'wordSuccess' : 'wordFail';
-            const message = success ? this.dialogue.getRandomLine(messageKey) : this.dialogue.get(messageKey)(wordData.word);
-            await this.ui.type(Array.isArray(message) ? message : [message]);
-            this.ui.renderHangman(this.state, this.dialogue);
-        }
-    }
-
-    async handleFinalEnigmaInput(value) {
-        this.state.isTyping = true;
-        const answer = value.toLowerCase();
-
-        if (answer === 'mulan') {
-            this.state.stage = 'end';
-            await this.ui.type(this.dialogue.get('finalSuccess'));
-            this.ui.disableInput();
-        } else {
-            this.state.finalTries--;
-            if (this.state.finalTries > 0) {
-                await this.ui.type(this.dialogue.get('finalWrong')(this.state.finalTries));
-            } else {
-                this.state.stage = 'end';
-                await this.ui.type(this.dialogue.get('finalFail'));
-                this.ui.disableInput();
-            }
-        }
-        this.state.isTyping = false;
-    }
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    const ui = new TerminalUI();
-    const dialogue = new Dialogue();
-    const game = new Game(ui, dialogue);
-
-    game.setupEventListeners();
-    game.start();
-});
+            await new P
