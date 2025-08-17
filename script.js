@@ -210,7 +210,7 @@ class Game {
             await this.ui.type(this.dialogue.get('difficultyPrompt'));
         } else {
             this.state.errorCount++;
-            await this.ui.type(this.dialogue.getRandomError('nameError'));
+            await this.ui.type(this.dialogue.getRandomLine('nameError'));
         }
         this.state.isTyping = false;
     }
