@@ -209,7 +209,8 @@ class Game {
             await this.ui.type(this.dialogue.get('difficultyPrompt'));
         } else {
             this.state.errorCount++;
-            await this.ui.type(this.dialogue.getRandomError('nameError'));
+            // **** CORREÇÃO APLICADA AQUI ****
+            await this.ui.type(this.dialogue.getRandomLine('nameError'));
         }
         this.state.isTyping = false;
     }
@@ -227,7 +228,8 @@ class Game {
                 : this.dialogue.get('hardChoiceNoError');
         } else {
             this.state.errorCount++;
-            const newPrompt = [...this.dialogue.getRandomError('difficultyError')];
+            // **** CORREÇÃO APLICADA AQUI ****
+            const newPrompt = [...this.dialogue.getRandomLine('difficultyError')];
             newPrompt.unshift(`"${value}"?`);
             linesToType = newPrompt;
             await this.ui.type(linesToType);
