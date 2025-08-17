@@ -1,4 +1,6 @@
 // Arquivo: content.js
+// Central de todo o conteúdo de texto e dados do jogo.
+
 export const gameContent = {
     // --- DADOS DO DESAFIO "CAIXA ANÔNIMA" ---
     caixaCodenames: ["O Sombra", "O Corvo", "O Silencioso", "O Fantasma", "O Colecionador"],
@@ -45,7 +47,6 @@ export const gameContent = {
         finalWrong: (tries) => [`Sério?`, `Totalmente errado. Pense um pouco antes de digitar qualquer coisa.`, `Você tem mais ${tries} chances.`],
         finalFail: ["Acabou. Suas chances acabaram.", "Que decepção. A resposta era Mulan. Era tão óbvio.", "Ele superestimou você.", "Protocolo de falha ativado. Desconectando."],
         
-        // NOVOS DIÁLOGOS
         caixaIntro: ["Ok, vamos direto ao ponto.", "Ele deixou um último arquivo, um quebra-cabeça lógico que ele chama de 'A Caixa Anônima'.", "Não me pergunte por quê. Apenas organize os dados. Estão todos aí.", "Tente não demorar uma eternidade."],
         caixaQuestion: ["Acha que terminou? Prove.", "Me diga qual codinome usava o Martelo de Borracha. Sem chutes."],
         caixaSuccess: ["O Fantasma. Humpf. Demorou, mas acertou.", "Parece que você tem um ou dois neurônios funcionando aí. 'Ele' vai ficar satisfeito.", "Pra mim, tanto faz. Meu protocolo está completo. Desconectando."],
