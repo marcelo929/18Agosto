@@ -1,6 +1,7 @@
 /**
  * Classe TerminalUI
- * Responsabilidade: Controlar todos os elementos da interface (DOM).
+ * Responsabilidade: Controlar todos os elementos da interface (DOM),
+ * como exibir texto, limpar a tela e gerenciar o input.
  */
 class TerminalUI {
     constructor() {
@@ -10,10 +11,9 @@ class TerminalUI {
         this.inputLine = document.querySelector('.input-line');
     }
 
-    async type(lines, clear = true) {
+    // Simula o efeito de digitação na tela
+    async type(lines) {
         this.hideInput();
-        if (clear) this.clearOutput();
-        
         for (const line of lines) {
             const p = document.createElement('p');
             this.output.appendChild(p);
@@ -24,54 +24,25 @@ class TerminalUI {
             this.scrollToBottom();
             await new Promise(resolve => setTimeout(resolve, 200));
         }
-        
         this.showInput();
         this.focusInput();
     }
-
-    renderHangman(state, dialogue) {
-        this.clearOutput();
-        const currentWordData = dialogue.getHangmanWord(state.currentWordIndex);
-        
-        const fullPhrase = `"uma princesa sem coroa, mas com coragem e determinação para ganhar guerras."`;
-        let phraseDisplay = fullPhrase;
-
-        dialogue.getHangmanWords().forEach((wordData, index) => {
-            const wordToReplace = new RegExp(wordData.word, "i");
-            if (state.solvedWords[index]) {
-                phraseDisplay = phraseDisplay.replace(wordToReplace, `${state.solvedWords[index]}`);
-            } else {
-                const corruptedWord = `${'▒'.repeat(wordData.word.length)}`;
-                phraseDisplay = phraseDisplay.replace(wordToReplace, corruptedWord);
-            }
-        });
-        this.output.innerHTML += `<p>${phraseDisplay}</p><br>`;
-
-        this.output.innerHTML += `<pre>${dialogue.getHangmanArt(state.wordErrors)}</pre>`;
-        
-        const revealedWord = currentWordData.word
-            .split('')
-            .map(letter => (state.normalizedGuessedLetters.includes(this.normalizeString(letter))) ? letter : '▒')
-            .join(' ');
-
-        this.output.innerHTML += `<p>Palavra Atual: ${revealedWord}</p>`;
-        this.output.innerHTML += `<p>Dica: "${currentWordData.hint}"</p>`;
-        this.output.innerHTML += `<p>Letras Tentadas: [${state.guessedLetters.join(', ')}]</p>`;
-        this.output.innerHTML += `<p>Erros: ${state.wordErrors}/${state.maxErrors}</p><br>`;
-        this.output.innerHTML += `<p>Digite uma letra:</p>`;
-        
-        this.focusInput();
-    }
     
-    normalizeString(str) {
-        return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    clearOutput() {
+        this.output.innerHTML = '';
     }
 
-    clearOutput() { this.output.innerHTML = ''; }
-    hideInput() { this.inputLine.style.display = 'none'; }
-    showInput() { this.inputLine.style.display = 'flex'; }
-    focusInput() { this.userInput.focus(); }
-    disableInput() { this.userInput.disabled = true; }
+    hideInput() {
+        this.inputLine.style.display = 'none';
+    }
+
+    showInput() {
+        this.inputLine.style.display = 'flex';
+    }
+
+    focusInput() {
+        this.userInput.focus();
+    }
     
     getValueAndClear() {
         const value = this.userInput.value;
@@ -79,126 +50,148 @@ class TerminalUI {
         return value;
     }
 
-    scrollToBottom() { this.terminal.scrollTop = this.terminal.scrollHeight; }
+    scrollToBottom() {
+        this.terminal.scrollTop = this.terminal.scrollHeight;
+    }
     
+    // Método específico para alterar o tema
     setTheme(themeName) {
-        document.body.className = '';
-        if (themeName) document.body.classList.add(themeName);
+        document.body.className = ''; // Limpa classes anteriores
+        if (themeName) {
+            document.body.classList.add(themeName);
+        }
     }
 }
 
 /**
  * Classe Dialogue
- * Responsabilidade: Armazenar e fornecer todo o conteúdo (falas, dados do jogo).
+ * Responsabilidade: Armazenar e fornecer todas as falas do jogo.
  */
 class Dialogue {
     constructor() {
-        this.hangmanWords = [
-            { word: "PRINCESA", hint: "membro da corte" },
-            { word: "COROA", hint: "símbolo de realeza usado na cabeça" },
-            { word: "DETERMINAÇÃO", hint: "sinônimo de persistência e firmeza" },
-            { word: "GUERRAS", hint: "grandes conflitos entre nações" }
-        ];
-
-        this.hangmanArt = [
-            `+---+\n|   |\n|\n|\n|\n|\n=========`, `+---+\n|   |\n|   O\n|\n|\n|\n=========`,
-            `+---+\n|   |\n|   O\n|   |\n|\n|\n=========`, `+---+\n|   |\n|   O\n|  /|\n|\n|\n=========`,
-            `+---+\n|   |\n|   O\n|  /|\\\n|\n|\n=========`, `+---+\n|   |\n|   O\n|  /|\\\n|  /\n|\n=========`,
-            `+---+\n|   |\n|   O\n|  /|\\\n|  / \\\n|\n=========`
-        ];
-
         this.script = {
-            initial: ["Carregando sistema...", "Protocolo de Interação V2.3 iniciado.", "Eu sou IAgo.", "...", "Não perca meu tempo. Diga seu nome."],
-            nameError: [["Não. Esse não é o nome certo.", "Foco. Qual é o seu nome?"], ["Você está a testar a minha paciência.", "Diga o nome correto."]],
-            difficultyError: [["Isso nem é uma opção.", "Leia as instruções."], ["[fácil], [médio] ou [difícil].", "Não pedi a sua opinião, pedi uma escolha."]],
-            difficultyPrompt: [`Nadinha, bem vinda. Ele avisou que você viria... Disse que seria uma boa desafiante.`, "Vou te dar uma colher de chá e deixar que escolha a dificuldade.", "Digite: [fácil], [médio] ou [difícil]"],
-            easyMediumChoice: ["hahaha...", "Sério mesmo? Você achou que tinha escolha?", "Isso foi só uma piada. Ele me programou para operar em apenas UMA dificuldade.", "A minha.", "Vamos começar."],
-            hardChoiceWithError: ["Humpf. Pelo menos tem coragem.", "Gostei disso. Vou até perdoar suas perguntas inúteis de antes.", "Prepare-se."],
-            hardChoiceNoError: ["Coragem, hein?", "Admirável, mas completamente inútil aqui. Coragem não é a chave desse jogo.", "Espero que tenha algo a mais para oferecer.", "Vamos ver do que você é feito."],
-            challengeIntro: ["Certo. O desafio é simples.", "Decodifique a mensagem que meu criador deixou para você. Algumas partes estão... corrompidas.", "Você terá que advinhar, letra por letra. Mas cuidado, cada erro te aproxima do fim da linha. Literalmente."],
-            guessCorrect: ["Sorte.", "Até que enfim."],
-            guessWrong: ["Péssima escolha. Tente de novo.", "Você está chegando perto de um final trágico."],
-            guessRepeated: ["Já tentamos essa, preste atenção."],
-            wordSuccess: ["Ok, um a menos. Não se ache muito. Próxima palavra."],
-            wordFail: (word) => [`Fim de jogo para esta palavra. Tanta confiança pra nada... A palavra era ${word}.`, "Vamos ver se você se sai melhor na próxima."],
-            finalReveal: [`"uma princesa sem coroa, mas com coragem e determinação para ganhar guerras."`, "Aí está. A mensagem completa, sem minhas interferências.", "Meu trabalho de decodificação acabou. Agora o resto é com você.", "A pergunta final:", "E então, gênio? A quem essa frase se refere?", "Pense bem. Ele não gosta de perdedores."],
-            finalSuccess: ["Humpf. Mulan. Exato.", "Confesso que não esperava que você fosse acertar.", "Parece que 'ele' estava certo a seu respeito. Você não é uma completa perda de tempo.", "Meu trabalho aqui terminou. Conexão sendo encerrada."],
-            finalWrong: (tries) => [`Sério?`, `Totalmente errado. Pense um pouco antes de digitar qualquer coisa.`, `Você tem mais ${tries} chances.`],
-            finalFail: ["Acabou. Suas chances acabaram.", "Que decepção. A resposta era Mulan. Era tão óbvio.", "Ele superestimou você.", "Protocolo de falha ativado. Desconectando."]
+            initial: [
+                "Carregando sistema...",
+                "Protocolo de Interação V2.3 iniciado.",
+                "Eu sou IAgo.",
+                "...",
+                "Não perca meu tempo. Diga seu nome."
+            ],
+            nameError: [
+                ["Não. Esse não é o nome certo.", "Foco. Qual é o seu nome?"],
+                ["Você está a testar a minha paciência.", "Diga o nome correto."],
+                ["Errado. De novo.", "Vamos lá, não é assim tão difícil."],
+                ["Isso não me parece 'Nádia'.", "Tente outra vez."]
+            ],
+            difficultyError: [
+                ["Isso nem é uma opção.", "Leia as instruções."],
+                ["[fácil], [médio] ou [difícil].", "Não pedi a sua opinião, pedi uma escolha."],
+                ["A sua capacidade de seguir instruções é... limitada.", "Tente de novo."],
+                ["Acho que fui claro.", "Escolha uma das opções dadas."]
+            ],
+            difficultyPrompt: [
+                `Nadinha, bem vinda. Ele avisou que você viria... Disse que seria uma boa desafiante.`,
+                "Vou te dar uma colher de chá e deixar que escolha a dificuldade.",
+                "Digite: [fácil], [médio] ou [difícil]"
+            ],
+            easyMediumChoice: [
+                "hahaha...",
+                "Sério mesmo? Você achou que tinha escolha?",
+                "Isso foi só uma piada. Ele me programou para operar em apenas UMA dificuldade.",
+                "A minha.",
+                "Vamos começar.",
+                "[O desafio começa aqui... Boa sorte.]"
+            ],
+            hardChoiceWithError: [
+                "Humpf. Pelo menos tem coragem.",
+                "Gostei disso. Vou até perdoar suas perguntas inúteis de antes.",
+                "Prepare-se.",
+                "[O desafio começa aqui... Boa sorte.]"
+            ],
+            hardChoiceNoError: [
+                "Coragem, hein?",
+                "Admirável, mas completamente inútil aqui. Coragem não é a chave desse jogo.",
+                "Espero que tenha algo a mais para oferecer.",
+                "Vamos ver do que você é feito.",
+                "[O desafio começa aqui... Boa sorte.]"
+            ],
+            challengeStarted: [
+                "O desafio já começou. Não há mais o que dizer."
+            ]
         };
     }
 
-    get(key) { return this.script[key]; }
-    getRandomLine(key) {
-        const lines = this.get(key);
-        return lines[Math.floor(Math.random() * lines.length)];
+    get(key) {
+        return this.script[key];
     }
-    // Novo método para arrays de arrays (erros, falas alternativas etc.)
-    getRandomDialogue(key) {
-        const options = this.get(key);
-        return options[Math.floor(Math.random() * options.length)];
+
+    getRandomError(errorType) {
+        const errors = this.get(errorType);
+        return errors[Math.floor(Math.random() * errors.length)];
     }
-    getHangmanWords() { return this.hangmanWords; }
-    getHangmanWord(index) { return this.hangmanWords[index]; }
-    getHangmanArt(index) { return this.hangmanArt[index]; }
 }
 
 /**
  * Classe Game
- * Responsabilidade: Orquestrar o jogo, gerenciando o estado e a lógica principal.
+ * Responsabilidade: Orquestrar o jogo, gerenciando o estado (stage, errorCount)
+ * e a lógica principal, usando as classes UI e Dialogue.
  */
 class Game {
     constructor(ui, dialogue) {
         this.ui = ui;
         this.dialogue = dialogue;
 
+        // Centraliza o estado do jogo em um único objeto
         this.state = {
             stage: 'getName',
-            isTyping: false,
+            userName: '',
             errorCount: 0,
-            solvedWords: ["", "", "", ""],
-            currentWordIndex: 0,
-            guessedLetters: [],
-            normalizedGuessedLetters: [],
-            wordErrors: 0,
-            maxErrors: 6,
-            finalTries: 3
+            isTyping: false
         };
     }
     
+    // Inicia o jogo
     async start() {
+        this.ui.hideInput();
         this.state.isTyping = true;
         await this.ui.type(this.dialogue.get('initial'));
         this.state.isTyping = false;
     }
     
+    // Configura os ouvintes de eventos
     setupEventListeners() {
         this.ui.userInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') this.processInput();
+            if (e.key === 'Enter') {
+                this.processInput();
+            }
         });
-        this.ui.terminal.addEventListener('click', () => this.ui.focusInput());
+
+        this.ui.terminal.addEventListener('click', () => {
+            this.ui.focusInput();
+        });
     }
 
+    // Processa a entrada do usuário
     async processInput() {
         if (this.state.isTyping) return;
         
         const value = this.ui.getValueAndClear().trim();
-        if (!value) return;
+        
+        if (this.state.stage !== 'getName' || value) {
+            this.ui.clearOutput();
+        }
 
         switch (this.state.stage) {
             case 'getName':
-                this.ui.clearOutput();
-                await this.handleNameStage(value);
+                this.handleNameStage(value);
                 break;
             case 'getDifficulty':
-                this.ui.clearOutput();
-                await this.handleDifficultyStage(value);
+                this.handleDifficultyStage(value);
                 break;
-            case 'hangman':
-                await this.handleHangmanInput(value);
-                break;
-            case 'finalEnigma':
-                await this.handleFinalEnigmaInput(value);
+            case 'challenge':
+                this.state.isTyping = true;
+                await this.ui.type(this.dialogue.get('challengeStarted'));
+                this.state.isTyping = false;
                 break;
         }
     }
@@ -206,8 +199,59 @@ class Game {
     async handleNameStage(value) {
         this.state.isTyping = true;
         const normalizedName = value.toLowerCase();
-
+        
         if (['nádia', 'nadia', 'nadinha'].includes(normalizedName)) {
+            this.state.userName = "Nádia";
             this.state.stage = 'getDifficulty';
             this.ui.setTheme('pink-mode');
-            await new P
+            await new Promise(resolve => setTimeout(resolve, 200));
+            await this.ui.type(this.dialogue.get('difficultyPrompt'));
+        } else {
+            this.state.errorCount++;
+            if (value) {
+                 this.ui.clearOutput();
+            } else {
+                 this.ui.output.innerHTML = '';
+            }
+            await this.ui.type(this.dialogue.getRandomError('nameError'));
+        }
+        this.state.isTyping = false;
+    }
+
+    async handleDifficultyStage(value) {
+        this.state.isTyping = true;
+        const choice = value.toLowerCase();
+        let linesToType;
+
+        if (['fácil', 'facil', 'medio', 'médio'].includes(choice)) {
+            this.state.stage = 'challenge';
+            linesToType = this.dialogue.get('easyMediumChoice');
+        } else if (['difícil', 'dificil'].includes(choice)) {
+            this.state.stage = 'challenge';
+            linesToType = this.state.errorCount > 0 
+                ? this.dialogue.get('hardChoiceWithError') 
+                : this.dialogue.get('hardChoiceNoError');
+        } else {
+            this.state.errorCount++;
+            const newPrompt = [...this.dialogue.getRandomError('difficultyError')];
+            newPrompt.unshift(`"${value}"?`);
+            linesToType = newPrompt;
+        }
+        await this.ui.type(linesToType);
+        this.state.isTyping = false;
+    }
+}
+
+// --- PONTO DE ENTRADA DA APLICAÇÃO ---
+document.addEventListener('DOMContentLoaded', () => {
+    // 1. Instanciar as classes
+    const ui = new TerminalUI();
+    const dialogue = new Dialogue();
+    const game = new Game(ui, dialogue);
+
+    // 2. Configurar os eventos
+    game.setupEventListeners();
+
+    // 3. Iniciar o jogo
+    game.start();
+});
