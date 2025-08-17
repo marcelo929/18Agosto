@@ -29,12 +29,10 @@ class TerminalUI {
         this.focusInput();
     }
 
-    // NOVO MÉTODO: Renderiza a interface da Forca
     renderHangman(state, dialogue) {
         this.clearOutput();
         const currentWordData = dialogue.getHangmanWord(state.currentWordIndex);
         
-        // 1. Monta a frase principal com o visual "corrompido"
         const fullPhrase = `"uma princesa sem coroa, mas com coragem e determinação para ganhar guerras."`;
         let phraseDisplay = fullPhrase;
 
@@ -49,10 +47,8 @@ class TerminalUI {
         });
         this.output.innerHTML += `<p>${phraseDisplay}</p><br>`;
 
-        // 2. Arte ASCII da forca
         this.output.innerHTML += `<pre>${dialogue.getHangmanArt(state.wordErrors)}</pre>`;
         
-        // 3. Status do Jogo
         const revealedWord = currentWordData.word
             .split('')
             .map(letter => (state.normalizedGuessedLetters.includes(this.normalizeString(letter))) ? letter : '▒')
@@ -67,7 +63,6 @@ class TerminalUI {
         this.focusInput();
     }
     
-    // Função auxiliar movida para dentro da UI para manter consistência
     normalizeString(str) {
         return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
     }
@@ -98,7 +93,6 @@ class TerminalUI {
  */
 class Dialogue {
     constructor() {
-        // CONTEÚDO DO DESAFIO ADICIONADO AQUI
         this.hangmanWords = [
             { word: "PRINCESA", hint: "membro da corte" },
             { word: "COROA", hint: "símbolo de realeza usado na cabeça" },
@@ -114,7 +108,6 @@ class Dialogue {
         ];
 
         this.script = {
-            // ... (diálogos iniciais que já tínhamos)
             initial: ["Carregando sistema...", "Protocolo de Interação V2.3 iniciado.", "Eu sou IAgo.", "...", "Não perca meu tempo. Diga seu nome."],
             nameError: [["Não. Esse não é o nome certo.", "Foco. Qual é o seu nome?"], ["Você está a testar a minha paciência.", "Diga o nome correto."]],
             difficultyError: [["Isso nem é uma opção.", "Leia as instruções."], ["[fácil], [médio] ou [difícil].", "Não pedi a sua opinião, pedi uma escolha."]],
@@ -122,7 +115,6 @@ class Dialogue {
             easyMediumChoice: ["hahaha...", "Sério mesmo? Você achou que tinha escolha?", "Isso foi só uma piada. Ele me programou para operar em apenas UMA dificuldade.", "A minha.", "Vamos começar."],
             hardChoiceWithError: ["Humpf. Pelo menos tem coragem.", "Gostei disso. Vou até perdoar suas perguntas inúteis de antes.", "Prepare-se."],
             hardChoiceNoError: ["Coragem, hein?", "Admirável, mas completamente inútil aqui. Coragem não é a chave desse jogo.", "Espero que tenha algo a mais para oferecer.", "Vamos ver do que você é feito."],
-            // NOVOS DIÁLOGOS DO DESAFIO
             challengeIntro: ["Certo. O desafio é simples.", "Decodifique a mensagem que meu criador deixou para você. Algumas partes estão... corrompidas.", "Você terá que advinhar, letra por letra. Mas cuidado, cada erro te aproxima do fim da linha. Literalmente."],
             guessCorrect: ["Sorte.", "Até que enfim."],
             guessWrong: ["Péssima escolha. Tente de novo.", "Você está chegando perto de um final trágico."],
@@ -156,10 +148,9 @@ class Game {
         this.dialogue = dialogue;
 
         this.state = {
-            stage: 'getName', // getName, getDifficulty, hangman, finalEnigma, end
+            stage: 'getName',
             isTyping: false,
             errorCount: 0,
-            // NOVO ESTADO PARA O DESAFIO
             solvedWords: ["", "", "", ""],
             currentWordIndex: 0,
             guessedLetters: [],
@@ -189,7 +180,6 @@ class Game {
         const value = this.ui.getValueAndClear().trim();
         if (!value) return;
 
-        // A lógica do switch agora direciona para os novos métodos
         switch (this.state.stage) {
             case 'getName':
                 this.ui.clearOutput();
@@ -208,9 +198,11 @@ class Game {
         }
     }
 
-    async handleNameStage(value) { /* ... (código existente, sem alterações) ... */ 
+    // **** INÍCIO DA CORREÇÃO ****
+    async handleNameStage(value) {
         this.state.isTyping = true;
         const normalizedName = value.toLowerCase();
+
         if (['nádia', 'nadia', 'nadinha'].includes(normalizedName)) {
             this.state.stage = 'getDifficulty';
             this.ui.setTheme('pink-mode');
@@ -223,7 +215,7 @@ class Game {
         this.state.isTyping = false;
     }
 
-    async handleDifficultyStage(value) { /* ... (código existente, com uma pequena alteração) ... */
+    async handleDifficultyStage(value) {
         this.state.isTyping = true;
         const choice = value.toLowerCase();
         let linesToType;
@@ -241,16 +233,14 @@ class Game {
             linesToType = newPrompt;
             await this.ui.type(linesToType);
             this.state.isTyping = false;
-            return; // Retorna para não iniciar o desafio
+            return; 
         }
         
         await this.ui.type(linesToType);
-        // >>> ALTERAÇÃO AQUI: Inicia o desafio da forca
         await this.startHangmanChallenge();
         this.state.isTyping = false;
     }
-
-    // --- NOVOS MÉTODOS PARA O DESAFIO ---
+    // **** FIM DA CORREÇÃO ****
 
     async startHangmanChallenge() {
         this.state.stage = 'hangman';
@@ -347,7 +337,6 @@ class Game {
     }
 }
 
-// --- PONTO DE ENTRADA DA APLICAÇÃO ---
 document.addEventListener('DOMContentLoaded', () => {
     const ui = new TerminalUI();
     const dialogue = new Dialogue();
