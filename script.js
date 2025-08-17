@@ -94,10 +94,10 @@ class TerminalUI {
 class Dialogue {
     constructor() {
         this.hangmanWords = [
-            { word: "PRINCESA", hint: "membro da corte" },
-            { word: "COROA", hint: "símbolo de realeza usado na cabeça" },
-            { word: "DETERMINAÇÃO", hint: "sinônimo de persistência e firmeza" },
-            { word: "GUERRAS", hint: "grandes conflitos entre nações" }
+            { word: "PRINCESA", hint: "Membro da corte." },
+            { word: "COROA", hint: "Mulher muito velha." },
+            { word: "DETERMINAÇÃO", hint: "Virtude daqueles que nunca desistem." },
+            { word: "GUERRAS", hint: "O que seriam travadas pela sua mão." }
         ];
 
         this.hangmanArt = [
