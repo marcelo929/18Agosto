@@ -97,7 +97,7 @@ class Dialogue {
             { word: "PRINCESA", hint: "Membro da corte." },
             { word: "COROA", hint: "Mulher muito velha." },
             { word: "DETERMINAÇÃO", hint: "Virtude daqueles que nunca desistem." },
-            { word: "GUERRAS", hint: "O que seriam travadas pela sua mão." }
+            { word: "GUERRAS", hint: "Seriam travadas pela sua mão." }
         ];
 
         this.hangmanArt = [
