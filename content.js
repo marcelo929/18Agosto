@@ -54,7 +54,8 @@ export const gameContent = {
         caixaSuccess: ["O Fantasma. Humpf. Demorou, mas acertou.", "Parece que você tem um ou dois neurônios funcionando aí. 'Ele' vai ficar satisfeito.", "Pra mim, tanto faz. Meu protocolo está completo. Desconectando."],
         caixaFail: ["Errado. Completamente errado.", "E eu achando que você estava entendendo. Patético.", "Volte para os fragmentos e tente usar a lógica, se é que você consegue."],
         
-        // TEXTO FINAL PERSONALIZADO
+        presenteIntro: ["Antes de eu ir...", "Ele me pediu para te entregar uma coisa.", "Um presente."],
+
         textoFinal: [
             "‘Oii, tudo bem?’",
             "Foi com esse lapso de coragem que iniciei nossa conversa, e mesmo imaginando os muitos cenários que poderiam se criar, não esperava que as coisas tomassem o rumo que tomaram.",
