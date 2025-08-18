@@ -300,33 +300,26 @@ class FinalTextStage extends GameStage {
     }
 
     async start() {
-        // Passo 1: Fazer a transição de volta para o chat
         if (this.fromCaixa) {
             document.getElementById('caixa-anonima-container').classList.add('hidden');
             document.getElementById('terminal').classList.remove('hidden');
             await this.game.ui.addBotMessage(this.game.dialogue.get('caixaSuccess'));
         }
         
-        // Passo 2: Iniciar a trilha sonora
         this.game.assetLoader.playSoundtrack();
 
-        // Passo 3: Exibir a introdução do "presente"
         const presentMessage = this.game.dialogue.get('presenteIntro');
         await this.game.ui.addBotMessage(presentMessage);
         
-        await new Promise(r => setTimeout(r, 1000)); // Pequena pausa dramática
+        await new Promise(r => setTimeout(r, 1000));
 
-        // Passo 4: Exibir o texto final com efeito de digitação
         const finalMessages = this.game.dialogue.get('textoFinal');
-        await this.game.ui.addBotTypingMessage(finalMessages, 40); // O segundo número é a velocidade em ms
+        await this.game.ui.addBotTypingMessage(finalMessages, 40);
 
-        // Passo 5: Desabilitar o input permanentemente
         this.game.ui.disableInput();
     }
 
-    async processInput(value) {
-        // Nenhuma ação necessária aqui, o jogo acabou.
-    }
+    async processInput(value) {}
 }
 
 // --- CLASSE PRINCIPAL DO JOGO (O "ORQUESTRADOR") ---
@@ -352,14 +345,29 @@ class Game {
         this.ui.addUserMessage(value);
         await this.currentStage.processInput(value);
     }
+
+    // ---- ALTERAÇÃO AQUI ----
     setupEventListeners() {
-        this.ui.inputLine.addEventListener('keydown', (e) => {
+        const sendButton = document.getElementById('sendBtn');
+
+        const submitInput = () => {
+            const value = this.ui.getValueAndClear().trim();
+            if (value) {
+                this.processInput(value);
+            }
+        };
+
+        this.ui.userInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
                 e.preventDefault();
-                const value = this.ui.getValueAndClear().trim();
-                if(value) this.processInput(value);
+                submitInput();
             }
         });
+
+        sendButton.addEventListener('click', () => {
+            submitInput();
+        });
+
         document.body.addEventListener('click', () => this.assetLoader.initAudio(), { once: true });
     }
 }
