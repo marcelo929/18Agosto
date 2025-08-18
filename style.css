@@ -242,3 +242,35 @@ select {
     font-weight: bold;
     color: var(--primary-hover-color);
 }
+/* --- ESTILOS PARA RESPONSIVIDADE (DISPOSITIVOS MÓVEIS) --- */
+
+@media (max-width: 800px) {
+
+    /* Altera o layout do quebra-cabeça para uma única coluna */
+    .caixa-grid-container {
+        flex-direction: column; /* Coloca os itens um sobre o outro */
+        gap: 1.5rem; /* Ajusta o espaçamento vertical */
+    }
+
+    /* Ajusta o padding do contêiner principal para telas menores */
+    .caixa-content {
+        padding: 1.5rem;
+    }
+    
+    /* Garante que as seções de dicas e da tabela ocupem a largura total */
+    .caixa-hints,
+    .caixa-table-container {
+        flex-basis: 100%;
+    }
+
+    /* Diminui um pouco o título em telas pequenas */
+    .caixa-content h2 {
+        font-size: 1.5rem;
+    }
+
+    /* Melhora a legibilidade da tabela em telas estreitas */
+    #challenge-grid th, #challenge-grid td {
+        padding: 0.5rem;
+        font-size: 0.9rem;
+    }
+}
