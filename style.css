@@ -244,6 +244,8 @@ select {
 }
 /* --- ESTILOS PARA RESPONSIVIDADE (DISPOSITIVOS MÓVEIS) --- */
 
+/* --- ESTILOS PARA RESPONSIVIDADE (DISPOSITIVOS MÓVEIS) --- */
+
 @media (max-width: 800px) {
 
     /* Altera o layout do quebra-cabeça para uma única coluna */
@@ -252,12 +254,14 @@ select {
         gap: 1.5rem; /* Ajusta o espaçamento vertical */
     }
 
-    /* Ajusta o padding do contêiner principal para telas menores */
+    /* Ajusta o contêiner principal para telas menores */
     .caixa-content {
         padding: 1.5rem;
+        max-width: 90vw; /* NOVO: O cartão ocupará no máximo 90% da largura da tela */
+        box-sizing: border-box; /* Garante que o padding não aumente a largura total */
     }
     
-    /* Garante que as seções de dicas e da tabela ocupem a largura total */
+    /* Garante que as seções de dicas e da tabela ocupem a largura total DENTRO do cartão */
     .caixa-hints,
     .caixa-table-container {
         flex-basis: 100%;
@@ -266,6 +270,11 @@ select {
     /* Diminui um pouco o título em telas pequenas */
     .caixa-content h2 {
         font-size: 1.5rem;
+    }
+
+    /* NOVO: Diminui a fonte das dicas para um visual mais compacto */
+    .caixa-hints p {
+        font-size: 0.9rem;
     }
 
     /* Melhora a legibilidade da tabela em telas estreitas */
