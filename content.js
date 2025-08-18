@@ -1,7 +1,7 @@
 // Arquivo: content.js
 export const gameContent = {
     // --- DADOS DO DESAFIO "CAIXA ANÔNIMA" ---
-    caixaCodenames: ["O Sombra", "O Corvo", "O Silencioso", "O Fantasma", "O Colecionador"],
+    caixaCodenames: ["O Colecionador", "O Corvo", "O Silencioso", "O Sombra", "O Fantasma"],
     caixaArsenal: ["Fio de Nylon", "Seringa com Potássio", "Chave de Fenda", "Martelo de Borracha", "Besta"],
     caixaSolution: {
         1: { codename: "O Sombra", weapon: "Besta" },
@@ -15,18 +15,18 @@ export const gameContent = {
         "2. O Fantasma está em algum lugar à direita de quem usa o Fio de Nylon.",
         "3. Entre o Sombra e o Colecionador, há exatamente três posições de distância.",
         "4. O Corvo não está em nenhuma ponta.",
-        "6. A arma usada pelo Colecionador contém um elemento químico.",
-        "7. O usuário do Martelo de Borracha está exatamente à esquerda de quem usa a arma com potássio.",
-        "9. O Corvo empunha uma arma manual de uso cotidiano.",
-        "10. O codinome central prefere agir sem fazer barulho."
+        "5. A arma usada pelo Colecionador contém um elemento químico.",
+        "6. O usuário do Martelo de Borracha está exatamente à esquerda de quem usa a arma com potássio.",
+        "7. O Corvo empunha uma arma manual de uso cotidiano.",
+        "8. O codinome central prefere agir sem fazer barulho."
     ],
 
     // --- DADOS DO DESAFIO DA FORCA ---
     hangmanWords: [
-        { word: "PRINCESA", hint: "membro da corte" },
-        { word: "COROA", hint: "símbolo de realeza usado na cabeça" },
-        { word: "DETERMINAÇÃO", hint: "sinônimo de persistência e firmeza" },
-        { word: "GUERRAS", hint: "grandes conflitos entre nações" }
+        { word: "PRINCESA", hint: "Membro da corte" },
+        { word: "COROA", hint: "Mulher velha" },
+        { word: "DETERMINAÇÃO", hint: "Sinônimo de persistência e firmeza" },
+        { word: "GUERRAS", hint: "Grandes conflitos" }
     ],
     hangmanArt: [ /* ... (sem alterações) ... */ ],
     
@@ -34,8 +34,8 @@ export const gameContent = {
     script: {
         initial: ["Carregando sistema...", "Protocolo de Interação V2.3 iniciado.", "Eu sou IAgo.", "...", "Não perca meu tempo. Diga seu nome."],
         nameError: [["Não. Esse não é o nome certo.", "Foco. Qual é o seu nome?"], ["Você está a testar a minha paciência.", "Diga o nome correto."]],
-        difficultyError: [["Isso nem é uma opção.", "Leia as instruções."], ["[fácil], [médio] ou [difícil].", "Não pedi a sua opinião, pedi uma escolha."]],
-        difficultyPrompt: [`Nadinha, bem vinda. Ele avisou que você viria... Disse que seria uma boa desafiante.`, "Vou te dar uma colher de chá e deixar que escolha a dificuldade.", "Digite: [fácil], [médio] ou [difícil]"],
+        difficultyError: [["Isso nem é uma opção.", "Leia as instruções."], ["fácil, médio ou difícil.", "Não pedi a sua opinião, pedi uma escolha."]],
+        difficultyPrompt: [`Nadinha, bem vinda. Ele avisou que você viria... Disse que seria uma boa desafiante.`, "Vou te dar uma colher de chá e deixar que escolha a dificuldade.", "Digite: fácil, médio ou difícil"],
         easyMediumChoice: ["hahaha...", "Sério mesmo? Você achou que tinha escolha?", "Isso foi só uma piada. Ele me programou para operar em apenas UMA dificuldade.", "A minha.", "Vamos começar."],
         hardChoiceWithError: ["Humpf. Pelo menos tem coragem.", "Gostei disso. Vou até perdoar suas perguntas inúteis de antes.", "Prepare-se."],
         hardChoiceNoError: ["Coragem, hein?", "Admirável, mas completamente inútil aqui. Coragem não é a chave desse jogo.", "Espero que tenha algo a mais para oferecer.", "Vamos ver do que você é feito."],
