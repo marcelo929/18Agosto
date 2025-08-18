@@ -1,6 +1,4 @@
 // Arquivo: content.js
-// Central de todo o conteúdo de texto e dados do jogo.
-
 export const gameContent = {
     // --- DADOS DO DESAFIO "CAIXA ANÔNIMA" ---
     caixaCodenames: ["O Sombra", "O Corvo", "O Silencioso", "O Fantasma", "O Colecionador"],
@@ -12,6 +10,17 @@ export const gameContent = {
         4: { codename: "O Fantasma", weapon: "Martelo de Borracha" },
         5: { codename: "O Colecionador", weapon: "Seringa com Potássio" }
     },
+    // NOVAS DICAS AQUI
+    caixaHints: [
+        "1. O usuário da Besta está mais à esquerda do que o portador da Chave de Fenda.",
+        "2. O Fantasma está em algum lugar à direita de quem usa o Fio de Nylon.",
+        "3. Entre o Sombra e o Colecionador, há exatamente três posições de distância.",
+        "4. O Corvo não está em nenhuma ponta.",
+        "6. A arma usada pelo Colecionador contém um elemento químico.",
+        "7. O usuário do Martelo de Borracha está exatamente à esquerda de quem usa a arma com potássio.",
+        "9. O Corvo empunha uma arma manual de uso cotidiano.",
+        "10. O codinome central prefere agir sem fazer barulho."
+    ],
 
     // --- DADOS DO DESAFIO DA FORCA ---
     hangmanWords: [
@@ -20,15 +29,11 @@ export const gameContent = {
         { word: "DETERMINAÇÃO", hint: "sinônimo de persistência e firmeza" },
         { word: "GUERRAS", hint: "grandes conflitos entre nações" }
     ],
-    hangmanArt: [
-        `+---+\n|   |\n|\n|\n|\n|\n=========`, `+---+\n|   |\n|   O\n|\n|\n|\n=========`,
-        `+---+\n|   |\n|   O\n|   |\n|\n|\n=========`, `+---+\n|   |\n|   O\n|  /|\n|\n|\n=========`,
-        `+---+\n|   |\n|   O\n|  /|\\\n|\n|\n=========`, `+---+\n|   |\n|   O\n|  /|\\\n|  /\n|\n=========`,
-        `+---+\n|   |\n|   O\n|  /|\\\n|  / \\\n|\n=========`
-    ],
+    hangmanArt: [ /* ... (sem alterações) ... */ ],
     
     // --- DIÁLOGOS DE TODO O JOGO ---
     script: {
+        // ... (todo o resto do script continua igual)
         initial: ["Carregando sistema...", "Protocolo de Interação V2.3 iniciado.", "Eu sou IAgo.", "...", "Não perca meu tempo. Diga seu nome."],
         nameError: [["Não. Esse não é o nome certo.", "Foco. Qual é o seu nome?"], ["Você está a testar a minha paciência.", "Diga o nome correto."]],
         difficultyError: [["Isso nem é uma opção.", "Leia as instruções."], ["[fácil], [médio] ou [difícil].", "Não pedi a sua opinião, pedi uma escolha."]],
@@ -46,12 +51,10 @@ export const gameContent = {
         finalSuccess: ["Humpf. Mulan. Exato.", "Confesso que não esperava que você fosse acertar.", "Parece que 'ele' estava certo a seu respeito. Você não é uma completa perda de tempo."],
         finalWrong: (tries) => [`Sério?`, `Totalmente errado. Pense um pouco antes de digitar qualquer coisa.`, `Você tem mais ${tries} chances.`],
         finalFail: ["Acabou. Suas chances acabaram.", "Que decepção. A resposta era Mulan. Era tão óbvio.", "Ele superestimou você.", "Protocolo de falha ativado. Desconectando."],
-        
         caixaIntro: ["Ok, vamos direto ao ponto.", "Ele deixou um último arquivo, um quebra-cabeça lógico que ele chama de 'A Caixa Anônima'.", "Não me pergunte por quê. Apenas organize os dados. Estão todos aí.", "Tente não demorar uma eternidade."],
         caixaQuestion: ["Acha que terminou? Prove.", "Me diga qual codinome usava o Martelo de Borracha. Sem chutes."],
         caixaSuccess: ["O Fantasma. Humpf. Demorou, mas acertou.", "Parece que você tem um ou dois neurônios funcionando aí. 'Ele' vai ficar satisfeito.", "Pra mim, tanto faz. Meu protocolo está completo. Desconectando."],
         caixaFail: ["Errado. Completamente errado.", "E eu achando que você estava entendendo. Patético.", "Volte para os fragmentos e tente usar a lógica, se é que você consegue."],
-
         finalText: "Ele te espera. Não o desaponte."
     }
 };
