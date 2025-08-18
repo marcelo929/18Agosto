@@ -19,7 +19,7 @@ class ChatUI {
         this.messageContainer.appendChild(messageDiv);
         this.scrollToBottom();
     }
-
+    
     async addBotMessage(lines) {
         this.disableInput();
         if (typeof lines === 'string') lines = [lines];
@@ -29,7 +29,7 @@ class ChatUI {
         typingDiv.innerHTML = '<div class="typing-indicator"><span></span><span></span><span></span></div>';
         this.messageContainer.appendChild(typingDiv);
         this.scrollToBottom();
-
+        
         await new Promise(r => setTimeout(r, 1200));
         this.messageContainer.removeChild(typingDiv);
 
@@ -66,6 +66,7 @@ class ChatUI {
         this.clearInteractiveArea();
         this.disableInput();
         const dialogue = stage.game.dialogue;
+
         const hintsHTML = dialogue.getCaixaHints().map(hint => `<p>${hint}</p>`).join('');
 
         this.interactiveArea.innerHTML = `
@@ -91,31 +92,13 @@ class ChatUI {
         document.getElementById('verifyBtn').addEventListener('click', () => stage.verifySolution());
     }
 
-    showFinalScene(text) {
-        document.getElementById('terminal').classList.add('hidden');
-        this.finalScene.classList.remove('hidden');
-        this.finalText.textContent = text;
-    }
-
+    showFinalScene(text) { document.getElementById('terminal').classList.add('hidden'); this.finalScene.classList.remove('hidden'); this.finalText.textContent = text; }
     normalizeString(str) { return str.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); }
     clearInteractiveArea() { this.interactiveArea.innerHTML = ''; }
     enableInput() { this.userInput.disabled = false; this.userInput.focus(); }
     disableInput() { this.userInput.disabled = true; }
-    getValueAndClear() {
-        const value = this.userInput.value;
-        this.userInput.value = '';
-        return value;
-    }
+    getValueAndClear() { const value = this.userInput.value; this.userInput.value = ''; return value; }
     scrollToBottom() { this.messageContainer.scrollTop = this.messageContainer.scrollHeight; }
-
-    enterChallengeMode() {
-        document.body.classList.add('challenge-mode');
-    }
-
-    exitChallengeMode() {
-        document.body.classList.remove('challenge-mode');
-        this.clearInteractiveArea();
-    }
 }
 
 class Dialogue {
@@ -231,7 +214,7 @@ class FinalEnigmaStage extends GameStage {
 class CaixaAnonimaStage extends GameStage {
     constructor(game) { super(game); this.subStage = 'grid'; }
     async start() {
-        this.game.ui.enterChallengeMode();
+        await this.game.ui.addBotMessage(this.game.dialogue.get('caixaIntro'));
         this.game.ui.renderCaixaAnonima(this);
     }
     async verifySolution() {
@@ -243,10 +226,10 @@ class CaixaAnonimaStage extends GameStage {
         }
         if (isCorrect) {
             this.subStage = 'finalQuestion';
-            this.game.ui.exitChallengeMode();
+            this.game.ui.clearInteractiveArea();
             await this.game.ui.addBotMessage(this.game.dialogue.get('caixaQuestion'));
         } else {
-            alert("Solução incorreta. Verifique os fragmentos e tente novamente.");
+            await this.game.ui.addBotMessage(this.game.dialogue.get('caixaFail'));
         }
     }
     async processInput(value) {
@@ -258,7 +241,6 @@ class CaixaAnonimaStage extends GameStage {
         } else {
             this.subStage = 'grid';
             await this.game.ui.addBotMessage(this.game.dialogue.get('caixaFail'));
-            this.game.ui.enterChallengeMode();
             this.game.ui.renderCaixaAnonima(this);
         }
     }
@@ -290,19 +272,17 @@ class Game {
         this.currentStage = newStage;
         if (this.currentStage) { this.currentStage.start(); }
     }
-    async processInput() {
-        if (!this.currentStage) return;
-        const value = this.ui.getValueAndClear().trim();
-        if (value) {
-            this.ui.addUserMessage(value);
-            await this.currentStage.processInput(value);
-        }
+    async processInput(value) {
+        if (!value || !this.currentStage) return;
+        this.ui.addUserMessage(value);
+        await this.currentStage.processInput(value);
     }
     setupEventListeners() {
         this.ui.inputLine.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
                 e.preventDefault();
-                this.processInput();
+                const value = this.ui.getValueAndClear().trim();
+                this.processInput(value);
             }
         });
         document.body.addEventListener('click', () => this.assetLoader.initAudio(), { once: true });
