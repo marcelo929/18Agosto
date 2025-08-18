@@ -63,33 +63,55 @@ class ChatUI {
     }
 
     renderCaixaAnonima(stage) {
-        this.clearInteractiveArea();
-        this.disableInput();
+        // ESCONDE O TERMINAL E MOSTRA O NOVO CONTÊINER
+        document.getElementById('terminal').classList.add('hidden');
+        const container = document.getElementById('caixa-anonima-container');
+        container.classList.remove('hidden');
+
+        this.clearInteractiveArea(); // Limpa a área antiga por segurança
+        this.disableInput(); // Desabilita o input do chat que não será usado
+        
         const dialogue = stage.game.dialogue;
-
         const hintsHTML = dialogue.getCaixaHints().map(hint => `<p>${hint}</p>`).join('');
-
-        this.interactiveArea.innerHTML = `
-            <div class="bot-message" style="max-width: 100%;">
-                <p><strong>Codenomes:</strong> ${dialogue.getCaixaCodenames().join(', ')}.</p>
-                <p><strong>Arsenal:</strong> ${dialogue.getCaixaArsenal().join(', ')}.</p>
-                <br>
-                <p><strong>Fragmentos do Servidor:</strong></p>
-                ${hintsHTML}
-            </div>`;
-
         const codenames = dialogue.getCaixaCodenames();
         const arsenal = dialogue.getCaixaArsenal();
         const defaultOption = `<option value="">Selecione...</option>`;
         const codenameOptions = defaultOption + codenames.map(c => `<option value="${c}">${c}</option>`).join('');
         const arsenalOptions = defaultOption + arsenal.map(a => `<option value="${a}">${a}</option>`).join('');
+        
         let gridHTML = `<table id="challenge-grid"><thead><tr><th>Posição</th><th>Codinome</th><th>Arsenal</th></tr></thead><tbody>`;
         for (let i = 1; i <= 5; i++) {
             gridHTML += `<tr><td>${i}</td><td><select id="codename-${i}">${codenameOptions}</select></td><td><select id="weapon-${i}">${arsenalOptions}</select></td></tr>`;
         }
-        gridHTML += `</tbody></table><button id="verifyBtn">Verificar Solução</button>`;
-        this.interactiveArea.innerHTML += gridHTML;
+        gridHTML += `</tbody></table>`;
+
+        // MONTA A ESTRUTURA COMPLETA NO NOVO CONTÊINER
+        container.innerHTML = `
+            <div class="caixa-content">
+                <h2>Quebra-cabeça: A Caixa Anônima</h2>
+                <div class="caixa-grid-container">
+                    <div class="caixa-hints">
+                        <p><strong>Fragmentos do Servidor:</strong></p>
+                        ${hintsHTML}
+                    </div>
+                    <div class="caixa-table-container">
+                        ${gridHTML}
+                    </div>
+                </div>
+                <div id="caixa-feedback"></div>
+                <button id="verifyBtn">Verificar Solução</button>
+            </div>
+        `;
+
+        // Adiciona o listener ao novo botão
         document.getElementById('verifyBtn').addEventListener('click', () => stage.verifySolution());
+    }
+
+    showCaixaFeedback(message) {
+        const feedbackEl = document.getElementById('caixa-feedback');
+        if (feedbackEl) {
+            feedbackEl.textContent = message;
+        }
     }
 
     showFinalScene(text) { document.getElementById('terminal').classList.add('hidden'); this.finalScene.classList.remove('hidden'); this.finalText.textContent = text; }
@@ -212,45 +234,64 @@ class FinalEnigmaStage extends GameStage {
 }
 
 class CaixaAnonimaStage extends GameStage {
-    constructor(game) { super(game); this.subStage = 'grid'; }
+    constructor(game) {
+        super(game);
+    }
+
     async start() {
         await this.game.ui.addBotMessage(this.game.dialogue.get('caixaIntro'));
-        this.game.ui.renderCaixaAnonima(this);
+        // Pequeno delay para o jogador ler a mensagem antes da transição
+        setTimeout(() => {
+            this.game.ui.renderCaixaAnonima(this);
+        }, 1500);
     }
+
     async verifySolution() {
-        const solution = this.game.dialogue.getCaixaSolution(); let isCorrect = true;
+        const solution = this.game.dialogue.getCaixaSolution();
+        let isCorrect = true;
         for (let i = 1; i <= 5; i++) {
             const selectedCodename = document.getElementById(`codename-${i}`).value;
             const selectedWeapon = document.getElementById(`weapon-${i}`).value;
-            if (selectedCodename !== solution[i].codename || selectedWeapon !== solution[i].weapon) { isCorrect = false; break; }
+            if (selectedCodename !== solution[i].codename || selectedWeapon !== solution[i].weapon) {
+                isCorrect = false;
+                break;
+            }
         }
+
         if (isCorrect) {
-            this.subStage = 'finalQuestion';
-            this.game.ui.clearInteractiveArea();
-            await this.game.ui.addBotMessage(this.game.dialogue.get('caixaQuestion'));
+            // Se correto, o jogo prossegue para a cena final
+            this.game.transitionTo(new FinalTextStage(this.game, true)); // Passamos um parâmetro para saber que veio daqui
         } else {
-            await this.game.ui.addBotMessage(this.game.dialogue.get('caixaFail'));
+            // Se incorreto, apenas mostra o feedback na tela do puzzle
+            const failMessage = this.game.dialogue.get('caixaFail');
+            this.game.ui.showCaixaFeedback(failMessage[0]); // Mostra a mensagem de erro
         }
     }
-    async processInput(value) {
-        if (this.subStage !== 'finalQuestion') return;
-        const answer = value.toLowerCase().replace('o ', '');
-        if (answer === 'fantasma') {
-            await this.game.ui.addBotMessage(this.game.dialogue.get('caixaSuccess'));
-            this.game.transitionTo(new FinalTextStage(this.game));
-        } else {
-            this.subStage = 'grid';
-            await this.game.ui.addBotMessage(this.game.dialogue.get('caixaFail'));
-            this.game.ui.renderCaixaAnonima(this);
-        }
-    }
+    
+    async processInput(value) {}
 }
 
 class FinalTextStage extends GameStage {
-    async start() {
-        this.game.ui.showFinalScene(this.game.dialogue.get('finalText'));
-        this.game.assetLoader.playSoundtrack();
+    constructor(game, fromCaixa = false) {
+        super(game);
+        this.fromCaixa = fromCaixa;
     }
+
+    async start() {
+        if (this.fromCaixa) {
+            // Se viemos da caixa, esconde o container dela, reexibe o terminal e mostra a mensagem de sucesso
+            document.getElementById('caixa-anonima-container').classList.add('hidden');
+            document.getElementById('terminal').classList.remove('hidden');
+            await this.game.ui.addBotMessage(this.game.dialogue.get('caixaSuccess'));
+        }
+        
+        // Pequeno delay antes de mostrar a cena final
+        setTimeout(() => {
+            this.game.ui.showFinalScene(this.game.dialogue.get('finalText'));
+            this.game.assetLoader.playSoundtrack();
+        }, 2000);
+    }
+
     async processInput(value) {}
 }
 
@@ -282,7 +323,7 @@ class Game {
             if (e.key === 'Enter') {
                 e.preventDefault();
                 const value = this.ui.getValueAndClear().trim();
-                this.processInput(value);
+                if(value) this.processInput(value);
             }
         });
         document.body.addEventListener('click', () => this.assetLoader.initAudio(), { once: true });
