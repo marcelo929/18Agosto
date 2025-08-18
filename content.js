@@ -10,7 +10,6 @@ export const gameContent = {
         4: { codename: "O Fantasma", weapon: "Martelo de Borracha" },
         5: { codename: "O Colecionador", weapon: "Seringa com Potássio" }
     },
-    // NOVAS DICAS AQUI
     caixaHints: [
         "1. O usuário da Besta está mais à esquerda do que o portador da Chave de Fenda.",
         "2. O Fantasma está em algum lugar à direita de quem usa o Fio de Nylon.",
@@ -33,7 +32,6 @@ export const gameContent = {
     
     // --- DIÁLOGOS DE TODO O JOGO ---
     script: {
-        // ... (todo o resto do script continua igual)
         initial: ["Carregando sistema...", "Protocolo de Interação V2.3 iniciado.", "Eu sou IAgo.", "...", "Não perca meu tempo. Diga seu nome."],
         nameError: [["Não. Esse não é o nome certo.", "Foco. Qual é o seu nome?"], ["Você está a testar a minha paciência.", "Diga o nome correto."]],
         difficultyError: [["Isso nem é uma opção.", "Leia as instruções."], ["[fácil], [médio] ou [difícil].", "Não pedi a sua opinião, pedi uma escolha."]],
@@ -55,6 +53,22 @@ export const gameContent = {
         caixaQuestion: ["Acha que terminou? Prove.", "Me diga qual codinome usava o Martelo de Borracha. Sem chutes."],
         caixaSuccess: ["O Fantasma. Humpf. Demorou, mas acertou.", "Parece que você tem um ou dois neurônios funcionando aí. 'Ele' vai ficar satisfeito.", "Pra mim, tanto faz. Meu protocolo está completo. Desconectando."],
         caixaFail: ["Errado. Completamente errado.", "E eu achando que você estava entendendo. Patético.", "Volte para os fragmentos e tente usar a lógica, se é que você consegue."],
-        finalText: "Ele te espera. Não o desaponte."
+        
+        // TEXTO FINAL PERSONALIZADO
+        textoFinal: [
+            "‘Oii, tudo bem?’",
+            "Foi com esse lapso de coragem que iniciei nossa conversa, e mesmo imaginando os muitos cenários que poderiam se criar, não esperava que as coisas tomassem o rumo que tomaram.",
+            "Mas bem, essa história não começa aqui. Ela começa de verdade há exatos 12 meses. Quando ao assinar a ata de uma prova de concurso me deparei com minha antiga rival às minhas costas, lembro que o que me veio à cabeça foi algo como: nossa, que azar ter caído na mesma sala que ela.",
+            "E pra completar a sequência, você escolheu sentar-se na cadeira ao lado da minha. Juro que me senti intimidado pela sua escolha.",
+            "Mas o que me causou um impacto maior foi um pequeno gesto seu, já no decorrer da prova: você escolheu mover-se algumas cadeiras para frente.",
+            "Com isso, pela primeira vez em 10 anos você estava na minha frente, bem ao alcance dos meus olhos. E caramba, você parecia ter uma beleza sobre-humana.",
+            "Perdi preciosos minutos de prova apenas admirando sua concentração, o jeito como seu cabelo caía sobre o rosto e suas tentativas de prendê-lo.",
+            "Fiquei me perguntando: como aquela garotinha irritante e sabichona podia parecer tão perfeita?",
+            "Um ano depois ainda não fui capaz de formular uma resposta, mas conviver com você como amigo me fez perceber que, na verdade, não houve grande mudança: tudo aquilo que te torna tão especial sempre esteve aí.",
+            "E não posso deixar de pontuar o encantamento que sinto por esses seus interesses suspeitos, humor duvidoso e por essa sua personalidade maluquinha.",
+            "Por isso, de verdade, obrigado!",
+            "Sei que, infelizmente pra mim, não seremos próximos por mais muito tempo e por isso agradeço por cada segundinho que passei e que ainda vou passar ao seu lado.",
+            "E correndo o risco de parecer um pouco presunçoso, se um dia você se perguntar novamente se ainda me lembro de você, saiba que eu nunca vou esquecer."
+        ]
     }
 };
