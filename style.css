@@ -185,3 +185,60 @@ select {
     font-size: 2rem;
     color: var(--primary-color); /* Cena final usa o rosa principal */
 }
+
+/* ESTILOS PARA O MODO FOCO DO QUEBRA-CABEÇA */
+#caixa-anonima-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100vw;
+    height: 100vh;
+    padding: 2rem;
+    box-sizing: border-box;
+    background-color: var(--background-color);
+}
+
+.caixa-content {
+    background-color: var(--interactive-bg);
+    border-radius: 1rem;
+    padding: 2.5rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    width: 100%;
+    max-width: 900px; /* Aumentamos a largura máxima */
+    text-align: center;
+}
+
+.caixa-content h2 {
+    color: var(--primary-color);
+    margin-top: 0;
+}
+
+.caixa-grid-container {
+    display: flex;
+    gap: 2rem;
+    margin-top: 1.5rem;
+    text-align: left;
+}
+
+.caixa-hints {
+    flex-basis: 40%;
+    background-color: #FEF5F6;
+    padding: 1rem;
+    border-radius: 0.75rem;
+}
+
+.caixa-hints p {
+    margin: 0 0 0.5rem;
+}
+
+.caixa-table-container {
+    flex-basis: 60%;
+}
+
+#caixa-feedback {
+    margin-top: 1rem;
+    min-height: 24px; /* Evita que o layout pule */
+    font-weight: bold;
+    color: var(--primary-hover-color);
+}
