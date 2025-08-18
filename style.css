@@ -88,6 +88,12 @@ body {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
 }
 
+/* ---- ALTERAÇÃO AQUI ---- */
+/* Esconde a área interativa se ela não tiver conteúdo, removendo o quadrado branco */
+#interactive-area:empty {
+    display: none;
+}
+
 #challenge-grid {
     border-collapse: collapse;
     width: 100%;
@@ -142,10 +148,12 @@ select {
     background-color: var(--primary-hover-color);
 }
 
+/* ---- ALTERAÇÃO AQUI ---- */
 .input-line {
     display: flex;
     align-items: center;
-    padding: 0.5rem;
+    gap: 0.5rem; /* Adiciona um pequeno espaço entre o input e o botão */
+    padding: 0.5rem 0.5rem 0.5rem 1rem; /* Ajusta o padding para acomodar o botão */
     margin: 0 1rem 1rem 1rem;
     background-color: white;
     border: 1px solid var(--border-color);
@@ -163,7 +171,7 @@ select {
     color: inherit;
     font-family: inherit;
     font-size: 1rem;
-    flex-grow: 1;
+    flex-grow: 1; /* Faz o campo de texto ocupar o espaço disponível */
     padding: 0.5rem;
     caret-color: var(--primary-color);
 }
@@ -171,6 +179,30 @@ select {
 #userInput:focus {
     outline: none;
 }
+
+/* ---- NOVOS ESTILOS PARA O BOTÃO ---- */
+#sendBtn {
+    background-color: var(--primary-color);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    flex-shrink: 0; /* Impede que o botão encolha */
+}
+
+#sendBtn:hover {
+    background-color: var(--primary-hover-color);
+}
+
+#sendBtn svg {
+    fill: white;
+}
+
 
 .hidden { display: none !important; }
 
@@ -191,13 +223,12 @@ select {
     display: flex;
     flex-direction: column;
     align-items: center;
-    /* justify-content: center; REMOVIDO para permitir o scroll */
     width: 100vw;
     height: 100vh;
     padding: 1rem;
     box-sizing: border-box;
     background-color: var(--background-color);
-    overflow-y: auto; /* ADICIONADO: Permite a rolagem vertical quando necessário */
+    overflow-y: auto; 
 }
 
 .caixa-content {
@@ -206,8 +237,9 @@ select {
     padding: 2.5rem;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
     width: 100%;
-    max-width: 900px; /* Aumentamos a largura máxima */
+    max-width: 900px; 
     text-align: center;
+    margin: auto 0; /* Centraliza verticalmente se o conteúdo for menor que a tela */
 }
 
 .caixa-content h2 {
@@ -239,46 +271,39 @@ select {
 
 #caixa-feedback {
     margin-top: 1rem;
-    min-height: 24px; /* Evita que o layout pule */
+    min-height: 24px;
     font-weight: bold;
     color: var(--primary-hover-color);
 }
-/* --- ESTILOS PARA RESPONSIVIDADE (DISPOSITIVOS MÓVEIS) --- */
 
 /* --- ESTILOS PARA RESPONSIVIDADE (DISPOSITIVOS MÓVEIS) --- */
 
 @media (max-width: 800px) {
 
-    /* Altera o layout do quebra-cabeça para uma única coluna */
     .caixa-grid-container {
-        flex-direction: column; /* Coloca os itens um sobre o outro */
-        gap: 1.5rem; /* Ajusta o espaçamento vertical */
+        flex-direction: column; 
+        gap: 1.5rem; 
     }
 
-    /* Ajusta o contêiner principal para telas menores */
     .caixa-content {
         padding: 1.5rem;
-        max-width: 90vw; /* NOVO: O cartão ocupará no máximo 90% da largura da tela */
-        box-sizing: border-box; /* Garante que o padding não aumente a largura total */
+        max-width: 90vw; 
+        box-sizing: border-box;
     }
     
-    /* Garante que as seções de dicas e da tabela ocupem a largura total DENTRO do cartão */
     .caixa-hints,
     .caixa-table-container {
         flex-basis: 100%;
     }
 
-    /* Diminui um pouco o título em telas pequenas */
     .caixa-content h2 {
         font-size: 1.5rem;
     }
 
-    /* NOVO: Diminui a fonte das dicas para um visual mais compacto */
     .caixa-hints p {
         font-size: 0.9rem;
     }
 
-    /* Melhora a legibilidade da tabela em telas estreitas */
     #challenge-grid th, #challenge-grid td {
         padding: 0.5rem;
         font-size: 0.9rem;
