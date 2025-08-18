@@ -44,6 +44,34 @@ class ChatUI {
         this.enableInput();
     }
 
+    async addBotTypingMessage(lines, speed = 50) {
+        this.disableInput();
+        if (typeof lines === 'string') lines = [lines];
+
+        const typingDiv = document.createElement('div');
+        typingDiv.className = 'message bot-message';
+        typingDiv.innerHTML = '<div class="typing-indicator"><span></span><span></span><span></span></div>';
+        this.messageContainer.appendChild(typingDiv);
+        this.scrollToBottom();
+        
+        await new Promise(r => setTimeout(r, 1200));
+        this.messageContainer.removeChild(typingDiv);
+
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'message bot-message';
+        this.messageContainer.appendChild(messageDiv);
+
+        for (const line of lines) {
+            for (const char of line) {
+                messageDiv.textContent += char;
+                this.scrollToBottom();
+                await new Promise(r => setTimeout(r, speed));
+            }
+            messageDiv.textContent += '\n\n';
+            this.scrollToBottom();
+        }
+    }
+
     renderHangman(state, dialogue) {
         this.clearInteractiveArea();
         const currentWordData = dialogue.getHangmanWord(state.currentWordIndex);
@@ -63,13 +91,12 @@ class ChatUI {
     }
 
     renderCaixaAnonima(stage) {
-        // ESCONDE O TERMINAL E MOSTRA O NOVO CONTÊINER
         document.getElementById('terminal').classList.add('hidden');
         const container = document.getElementById('caixa-anonima-container');
         container.classList.remove('hidden');
 
-        this.clearInteractiveArea(); // Limpa a área antiga por segurança
-        this.disableInput(); // Desabilita o input do chat que não será usado
+        this.clearInteractiveArea();
+        this.disableInput();
         
         const dialogue = stage.game.dialogue;
         const hintsHTML = dialogue.getCaixaHints().map(hint => `<p>${hint}</p>`).join('');
@@ -85,7 +112,6 @@ class ChatUI {
         }
         gridHTML += `</tbody></table>`;
 
-        // MONTA A ESTRUTURA COMPLETA NO NOVO CONTÊINER
         container.innerHTML = `
             <div class="caixa-content">
                 <h2>Quebra-cabeça: A Caixa Anônima</h2>
@@ -103,7 +129,6 @@ class ChatUI {
             </div>
         `;
 
-        // Adiciona o listener ao novo botão
         document.getElementById('verifyBtn').addEventListener('click', () => stage.verifySolution());
     }
 
@@ -240,7 +265,6 @@ class CaixaAnonimaStage extends GameStage {
 
     async start() {
         await this.game.ui.addBotMessage(this.game.dialogue.get('caixaIntro'));
-        // Pequeno delay para o jogador ler a mensagem antes da transição
         setTimeout(() => {
             this.game.ui.renderCaixaAnonima(this);
         }, 1500);
@@ -259,12 +283,10 @@ class CaixaAnonimaStage extends GameStage {
         }
 
         if (isCorrect) {
-            // Se correto, o jogo prossegue para a cena final
             this.game.transitionTo(new FinalTextStage(this.game, true));
         } else {
-            // Se incorreto, apenas mostra o feedback na tela do puzzle
             const failMessage = this.game.dialogue.get('caixaFail');
-            this.game.ui.showCaixaFeedback(failMessage[0]); // Mostra a mensagem de erro
+            this.game.ui.showCaixaFeedback(failMessage[0]);
         }
     }
     
@@ -280,25 +302,25 @@ class FinalTextStage extends GameStage {
     async start() {
         // Passo 1: Fazer a transição de volta para o chat
         if (this.fromCaixa) {
-            // Esconde a tela do quebra-cabeça
             document.getElementById('caixa-anonima-container').classList.add('hidden');
-            // Reexibe o terminal do chat
             document.getElementById('terminal').classList.remove('hidden');
-            // Exibe a mensagem de sucesso do desafio anterior para uma transição suave
             await this.game.ui.addBotMessage(this.game.dialogue.get('caixaSuccess'));
         }
         
         // Passo 2: Iniciar a trilha sonora
         this.game.assetLoader.playSoundtrack();
 
-        // Pequeno delay para criar um momento de suspense
-        await new Promise(r => setTimeout(r, 1500)); 
+        // Passo 3: Exibir a introdução do "presente"
+        const presentMessage = this.game.dialogue.get('presenteIntro');
+        await this.game.ui.addBotMessage(presentMessage);
+        
+        await new Promise(r => setTimeout(r, 1000)); // Pequena pausa dramática
 
-        // Passo 3: Exibir o texto final no chat, mensagem por mensagem
+        // Passo 4: Exibir o texto final com efeito de digitação
         const finalMessages = this.game.dialogue.get('textoFinal');
-        await this.game.ui.addBotMessage(finalMessages);
+        await this.game.ui.addBotTypingMessage(finalMessages, 40); // O segundo número é a velocidade em ms
 
-        // Passo 4: Desabilitar o input, pois o jogo terminou
+        // Passo 5: Desabilitar o input permanentemente
         this.game.ui.disableInput();
     }
 
