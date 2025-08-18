@@ -1,51 +1,142 @@
-/* --- NOVOS ESTILOS PARA O DESAFIO "CAIXA ANÔNIMA" --- */
+:root {
+            --text-color: #1f2937; /* Cinza escuro */
+            --background-color: #fdf2f8; /* Fundo rosa muito claro */
+            --bot-bubble-bg: #fce7f3; /* Rosa claro para balões */
+            --interactive-bg: #ffffff;
+            --primary-color: #db2777; /* Rosa principal */
+            --primary-hover-color: #be185d; /* Rosa mais escuro para hover */
+            --border-color: #f9a8d4; /* Borda rosa médio */
+        }
 
-#interactive-area {
-    margin-top: 1rem;
-}
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
 
-#challenge-grid {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 1rem;
-    color: var(--text-color-pink); /* Texto rosa */
-}
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            font-family: 'Inter', sans-serif;
+            font-size: 16px;
+            line-height: 1.6;
+        }
 
-#challenge-grid th, #challenge-grid td {
-    border: 1px solid var(--text-color-pink); /* Bordas rosas */
-    padding: 0.5rem;
-    text-align: left;
-}
+        #terminal {
+            padding: 1rem;
+            height: 100vh;
+            box-sizing: border-box;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .message-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            padding-bottom: 1rem;
+        }
 
-#challenge-grid th {
-    background-color: rgba(242, 162, 232, 0.1); /* Fundo sutilmente rosado para o cabeçalho */
-    border-bottom: 2px solid var(--text-color-pink); /* Borda inferior mais destacada no cabeçalho */
-}
+        .bot-message {
+            background-color: var(--bot-bubble-bg);
+            padding: 0.75rem 1rem;
+            border-radius: 1.25rem;
+            border-bottom-left-radius: 0.25rem;
+            max-width: 80%;
+            align-self: flex-start;
+            white-space: pre-wrap;
+        }
 
-#challenge-grid select, #interactive-area button {
-    width: 100%;
-    background-color: var(--background-color);
-    color: var(--text-color-pink); /* Texto rosa nos selects e botões */
-    font-family: 'Inconsolata', monospace;
-    font-size: 1.2rem;
-    border: 1px solid var(--text-color-pink); /* Bordas rosas nos selects e botões */
-    padding: 0.3rem;
-    cursor: pointer; /* Adiciona cursor para indicar interatividade */
-}
+        #interactive-area {
+            background-color: var(--interactive-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            max-width: 90%;
+            align-self: flex-start;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        
+        #challenge-grid {
+            border-collapse: collapse;
+            width: 100%;
+            font-size: 1rem;
+        }
 
-#interactive-area button {
-    text-align: center;
-    padding: 0.5rem;
-    margin-top: 0.5rem;
-    transition: background-color 0.2s, color 0.2s;
-}
+        #challenge-grid th, #challenge-grid td {
+            border: none;
+            border-bottom: 1px solid var(--border-color);
+            padding: 0.75rem;
+            text-align: left;
+        }
 
-#interactive-area button:hover {
-    background-color: var(--text-color-pink);
-    color: var(--background-color);
-}
+        #challenge-grid th {
+            color: #6b7280; /* Cinza mais escuro para cabeçalho */
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.05em;
+        }
+        
+        #challenge-grid tr:last-child td {
+            border-bottom: none;
+        }
 
-#challenge-grid select:focus, #interactive-area button:focus {
-    outline: 2px solid var(--text-color-pink); /* Adiciona um foco visual rosa */
-    outline-offset: 1px;
-}
+        select {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            font-family: inherit;
+            font-size: 1rem;
+            width: 100%;
+            padding: 0.5rem;
+        }
+        
+        #verifyBtn {
+            background-color: var(--primary-color);
+            border: none;
+            color: white;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: bold;
+            padding: 0.75rem 1.5rem;
+            margin-top: 1.5rem;
+            cursor: pointer;
+            border-radius: 0.75rem;
+            transition: background-color 0.3s;
+        }
+        
+        #verifyBtn:hover {
+            background-color: var(--primary-hover-color);
+        }
+
+        .input-line {
+            margin-top: 1rem;
+            display: flex;
+            align-items: center;
+            padding: 0.5rem;
+            background-color: white;
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+        }
+
+        .prompt {
+            display: none; /* Não precisamos do prompt ">" no estilo de chat */
+        }
+
+        #userInput {
+            background-color: transparent;
+            border: none;
+            color: inherit;
+            font-family: inherit;
+            font-size: 1rem;
+            flex-grow: 1;
+            padding: 0.5rem;
+            caret-color: var(--primary-color);
+        }
+
+        #userInput:focus {
+            outline: none;
+        }
