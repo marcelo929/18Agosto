@@ -260,7 +260,7 @@ class CaixaAnonimaStage extends GameStage {
 
         if (isCorrect) {
             // Se correto, o jogo prossegue para a cena final
-            this.game.transitionTo(new FinalTextStage(this.game, true)); // Passamos um parâmetro para saber que veio daqui
+            this.game.transitionTo(new FinalTextStage(this.game, true));
         } else {
             // Se incorreto, apenas mostra o feedback na tela do puzzle
             const failMessage = this.game.dialogue.get('caixaFail');
@@ -278,21 +278,33 @@ class FinalTextStage extends GameStage {
     }
 
     async start() {
+        // Passo 1: Fazer a transição de volta para o chat
         if (this.fromCaixa) {
-            // Se viemos da caixa, esconde o container dela, reexibe o terminal e mostra a mensagem de sucesso
+            // Esconde a tela do quebra-cabeça
             document.getElementById('caixa-anonima-container').classList.add('hidden');
+            // Reexibe o terminal do chat
             document.getElementById('terminal').classList.remove('hidden');
+            // Exibe a mensagem de sucesso do desafio anterior para uma transição suave
             await this.game.ui.addBotMessage(this.game.dialogue.get('caixaSuccess'));
         }
         
-        // Pequeno delay antes de mostrar a cena final
-        setTimeout(() => {
-            this.game.ui.showFinalScene(this.game.dialogue.get('finalText'));
-            this.game.assetLoader.playSoundtrack();
-        }, 2000);
+        // Passo 2: Iniciar a trilha sonora
+        this.game.assetLoader.playSoundtrack();
+
+        // Pequeno delay para criar um momento de suspense
+        await new Promise(r => setTimeout(r, 1500)); 
+
+        // Passo 3: Exibir o texto final no chat, mensagem por mensagem
+        const finalMessages = this.game.dialogue.get('textoFinal');
+        await this.game.ui.addBotMessage(finalMessages);
+
+        // Passo 4: Desabilitar o input, pois o jogo terminou
+        this.game.ui.disableInput();
     }
 
-    async processInput(value) {}
+    async processInput(value) {
+        // Nenhuma ação necessária aqui, o jogo acabou.
+    }
 }
 
 // --- CLASSE PRINCIPAL DO JOGO (O "ORQUESTRADOR") ---
